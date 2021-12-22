@@ -4,7 +4,9 @@ package com.example;
 public class Greeter {
 
   /** This is a constructor. */
-  public Greeter() {}
+  public Greeter() {
+
+  }
 
   /**
    * @param someone value
@@ -14,3 +16,4 @@ public class Greeter {
     return String.format("Hello, %s!", someone);
   }
 }
+
