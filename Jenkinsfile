@@ -1,8 +1,8 @@
-pipeline{
+pipeline {
     agent any
 
     stages {
-        stage ('Build'){
+        stage('Build') {
             steps {
                 powershell 'mvn clean package'
             }
@@ -14,28 +14,26 @@ pipeline{
             }
         }
 
-        stage('Deploy to staging'){
-            steps{
+        stage('Deploy to staging') {
+            steps {
                 build job: 'deploy-to-staging'
             }
         }
 
-        stage('Deploy to PRODUCTION'){
-            steps{
-                timeout(time: 5, unit: 'DAYS'){
+        stage('Deploy to PRODUCTION') {
+            steps {
+                timeout(time: 5, unit: 'DAYS') {
                     input message: 'Approve PRODUCTION deployment?'
                 }
 
-                steps{
-                    build job: 'deploy-to-production'
-                }
+                build job: 'deploy-to-production'
             }
 
-            post{
-                success{
+            post {
+                success {
                     echo 'Deployment to PROD is a success.'
                 }
-                failure{
+                failure {
                     echo 'Deployment to PROD failed.'
                 }
             }
