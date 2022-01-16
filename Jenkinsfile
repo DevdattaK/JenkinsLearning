@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     stages {
         stage('Build') {
             steps {
@@ -8,35 +7,36 @@ pipeline {
             }
             post {
                 success {
-                    echo 'Archiving artifacts'
+                    echo 'Now Archiving...'
                     archiveArtifacts artifacts: '**/target/*.war'
                 }
             }
         }
-
-        stage('Deploy to staging') {
+        stage('Deploy to Staging') {
             steps {
                 build job: 'deploy-to-staging'
             }
         }
 
-        stage('Deploy to PRODUCTION') {
+        stage('Deploy to Production') {
             steps {
                 timeout(time: 5, unit: 'DAYS') {
-                    input message: 'Approve PRODUCTION deployment?'
+                    input message: 'Approve PRODUCTION Deployment?'
                 }
 
                 build job: 'deploy-to-production'
             }
-
             post {
                 success {
-                    echo 'Deployment to PROD is a success.'
+                    echo 'Code deployed to Production.'
                 }
+
                 failure {
-                    echo 'Deployment to PROD failed.'
+                    echo ' Deployment failed.'
                 }
             }
         }
+
+
     }
 }
