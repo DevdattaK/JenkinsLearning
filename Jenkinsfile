@@ -1,5 +1,14 @@
 pipeline {
     agent any
+
+    parameters {
+        string(name: 'tomcat_staging', defaultValue: '3.83.116.236', description: 'Staging Server')
+        string(name: 'tomcat_production', defaultValue: '35.175.174.111', description: 'Production Server')
+    }
+
+    triggers {
+        pollSCM('* * * * *')
+    }
     stages {
         stage('Build') {
             steps {
@@ -12,32 +21,20 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Staging') {
-            steps {
-                build job: 'deploy-to-staging'
-            }
-        }
 
-        stage('Deploy to Production') {
-            steps {
-                echo 'deploying to PROD'
-                timeout(time: 5, unit: 'DAYS') {
-                    input message: 'Approve PRODUCTION Deployment?'
+        stage('Deployments'){
+            parallel{
+                stage('Deploy to staging'){
+                    steps{
+                        powershell "scp -i D:\\PersonalDevelopment\\Programming\\Workspaces\\maven-project\\SSHKey\\keyPair.pem **/target/*.war ec2-user@${tomcat_staging}:/var/lib/tomcat/webapps"
+                    }
                 }
-
-                build job: 'deploy-to-production'
-            }
-            post {
-                success {
-                    echo 'Code deployed to Production.'
-                }
-
-                failure {
-                    echo ' Deployment failed.'
+                stage('Deploy to production'){
+                    steps {
+                        powershell "scp -i D:\\PersonalDevelopment\\Programming\\Workspaces\\maven-project\\SSHKey\\keyPair.pem **/target/*.war ec2-user@${tomcat_production}:/var/lib/tomcat/webapps"
+                    }
                 }
             }
         }
-
-
     }
 }
