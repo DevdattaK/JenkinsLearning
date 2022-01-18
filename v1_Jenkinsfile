@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                powershell 'mvn clean package'
+            }
+            post {
+                success {
+                    echo 'Now Archiving...'
+                    archiveArtifacts artifacts: '**/target/*.war'
+                }
+            }
+        }
+        stage('Deploy to Staging') {
+            steps {
+                build job: 'deploy-to-staging'
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo 'deploying to PROD'
+                timeout(time: 5, unit: 'DAYS') {
+                    input message: 'Approve PRODUCTION Deployment?', submitter: Approver
+                }
+
+                build job: 'deploy-to-production'
+            }
+            post {
+                success {
+                    echo 'Code deployed to Production.'
+                }
+
+                failure {
+                    echo ' Deployment failed.'
+                }
+            }
+        }
+
+
+    }
+}
