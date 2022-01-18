@@ -26,12 +26,12 @@ pipeline {
             parallel{
                 stage('Deploy to staging'){
                     steps{
-                        bat "winscp -i devdatta@173.54.96.253 D:\\PersonalDevelopment\\Programming\\Workspaces\\maven-project\\SSHKey\\keyPair.pem **/target/*.war ec2-user@${params.tomcat_staging}:/var/lib/tomcat/webapps"
+                        bat "winscp -i D:/PersonalDevelopment/Programming/Workspaces/maven-project/SSHKey/keyPair.pem **/target/*.war ec2-user@${params.tomcat_staging}:/var/lib/tomcat/webapps"
                     }
                 }
                 stage('Deploy to production'){
                     steps {
-                        bat "winscp -i devdatta@173.54.96.253 D:\\PersonalDevelopment\\Programming\\Workspaces\\maven-project\\SSHKey\\keyPair.pem **/target/*.war ec2-user@${params.tomcat_production}:/var/lib/tomcat/webapps"
+                        bat "winscp -i D:/PersonalDevelopment/Programming/Workspaces/maven-project/SSHKey/keyPair.pem **/target/*.war ec2-user@${params.tomcat_production}:/var/lib/tomcat/webapps"
                     }
                 }
             }
